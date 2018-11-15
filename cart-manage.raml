@@ -1,0 +1,431 @@
+#%RAML 0.8
+title: supermarket-cart-manage-api
+mediaType: application/json
+
+/productions:
+  get:
+    description: As a customer I can get all the productions then I can get productions to buy
+    responses:
+      200:
+        body:
+          application/json:
+            schema: |
+              {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "array",
+                "productions": {
+                  "type": "object",
+                  "properties": {
+                    "price": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "categoryUri": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "categoryId": {
+                      "type": "integer"
+                     }
+                  },
+                  "required": ["price", "name", "categoryUri", "id", "categoryId"]
+                }
+              }
+            example: |
+              [
+                {
+                  "price": 10,
+                  "categoryUri": "categories/2",
+                  "name": "apple",
+                  "id": 1,
+                  "categoryId": 2
+                }
+              ]
+
+  post:
+    description: As an admin I can create a production so that customer can buy the production
+    body:
+      application/json:
+        schema: |
+          {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "price": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "categoryId": {
+                "type": "integer"
+               }
+            },
+            "required": ["price", "name", "categoryId"]
+          }
+        example: |
+          {
+            "price": 10,
+            "name": "apple",
+            "categoryId": 2
+          }
+    responses:
+      201:
+        body:
+          application/json:
+            schema: |
+              {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                  "itemUri": {
+                    "type": "string"
+                  }
+                },
+                "required": ["itemUri"]
+              }
+            example: |
+              {
+                "itemUri": "productions/10"
+              }
+
+  /{id}:
+    get:
+      description: As a customer I can view the production detail so that I can decide whether to buy the production or not.
+      responses:
+        200:
+          body:
+            application/json:
+              schema: |
+                {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object",
+                  "required": true,
+                  "properties": {
+                    "price": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "categoryUri": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "categoryId": {
+                      "type": "integer"
+                     }
+                  },
+                  "required": ["price", "name", "categoryUri", "id", "categoryId"]
+                }
+              example: |
+                {
+                  "price": 10,
+                  "categoryUri": "categories/2",
+                  "name": "apple",
+                  "id": 1,
+                  "categoryId": 2
+                }
+
+    delete:
+      description: As a admin I can delete a production so that customer won't see outdated production
+      responses:
+        204:
+
+    put:
+      description: As a admin I can update a production so that customer can see the newer production details
+      body:
+        application/json:
+          schema: |
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "required": true,
+              "properties": {
+                "price": {
+                  "type": "number"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "categoryId": {
+                  "type": "integer"
+                 }
+              },
+              "required": ["price", "name", "categoryId"]
+            }
+          example: |
+            {
+              "price": 10,
+              "name": "apple",
+              "categoryId": 2
+            }
+      responses:
+        204:
+
+/carts:
+  get:
+    description: As a admin I can get all carts
+    responses:
+      200:
+        body:
+          application/json:
+            schema: |
+              {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                  "totalCount": {
+                    "type": "number"
+                  },
+                  "productions": {
+                    "type": "array",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "userId": {
+                        "type": "number"
+                      },
+                      "productions": {
+                        "type": "array",
+                        "productions": {
+                          "type": "object",
+                          "properties": {
+                            "productionId": {
+                              "type": "integer",
+                              "required": true
+                            },
+                            "amount": {
+                              "type": "number",
+                              "required": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["totalCount", "productions"]
+                }
+              }
+            example: |
+              {
+                "totalCount": 3,
+                "carts": [
+                  {
+                    "id": 1,
+                    "userId": 1,
+                    "productions": [
+                      {
+                        "productionId": 2,
+                        "amount": 5
+                      },
+                      {
+                        "productionId": 1,
+                        "amount": 3
+                      },
+                      {
+                        "productionId": 4,
+                        "amount": 2
+                      }
+                    ]
+                  },
+                  {
+                    "id": 2,
+                    "userId": 3,
+                    "productions": [
+                      {
+                        "productionId": 2,
+                        "amount": 5
+                      },
+                      {
+                        "productionId": 1,
+                        "amount": 3
+                      },
+                      {
+                        "productionId": 4,
+                        "amount": 2
+                      }
+                    ]
+                  }
+                ]
+              }
+
+  post:
+    description: As an admin I can insert a cart so that customer can pay for productions
+    body:
+      application/json:
+        schema: |
+          {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+              "userId": {
+                "type": "number"
+              },
+              "productions": {
+                "type": "array",
+                "productions": {
+                  "type": "object",
+                  "properties": {
+                    "productionId": {
+                      "type": "integer",
+                      "required": true
+                    },
+                    "amount": {
+                      "type": "number",
+                      "required": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        example: |
+          {
+            "userId": "1",
+            "productions": [{
+                "productionId": 1,
+                "amount": 2
+              },
+              {
+                "productionId": 2,
+                "amount": 3
+              }]
+          }
+    responses:
+      201:
+        body:
+          application/json:
+            schema: |
+              {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                  "cartUri": {
+                    "type": "string"
+                  }
+                }
+              }
+            example: |
+              {
+                "cartUri": "carts/4"
+              }
+  /{id}:
+    get:
+      description: As a admin I can get a cart details so that I can see what productions a customer has put into
+      responses:
+        200:
+          body:
+            application/json:
+              schema: |
+                {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "userId": {
+                      "type": "number"
+                    },
+                    "productions": {
+                      "type": "array",
+                      "productions": {
+                        "type": "object",
+                        "properties": {
+                          "productionId": {
+                            "type": "integer",
+                            "required": true
+                          },
+                          "amount": {
+                            "type": "number",
+                            "required": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              example: |
+                {
+                  "id": 1,
+                  "userId": 1,
+                  "productions": [
+                    {
+                      "productionId": 2,
+                      "amount": 5
+                    },
+                    {
+                      "productionId": 1,
+                      "amount": 3
+                    },
+                    {
+                      "productionId": 4,
+                      "amount": 2
+                    }
+                  ]
+                }
+
+    delete:
+      description: As a admin I can delete a cart so that customer can discard a cart when she/he doesn't want it
+      responses:
+        204:
+
+    put:
+      description: As a admin I can update a cart so that customer can modify producations she/he had put into cart
+      body:
+        application/json:
+          schema: |
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "integer",
+                  "required": true
+                },
+                "productions": {
+                  "type": "array",
+                  "productions": {
+                    "type": "object",
+                    "properties": {
+                      "productionId": {
+                        "type": "integer",
+                        "required": true
+                      },
+                      "amount": {
+                        "type": "number",
+                        "required": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          example: |
+            {
+              "userId": "1",
+              "productions": [{
+                  "productionId": 1,
+                  "amount": 3
+                },
+                {
+                  "productionId": 2,
+                  "amount": 3
+                }]
+            }
+      responses:
+        204:
+
+    /productions/{productionId}:
+      delete:
+        description: As a admin I can delete a production in a cart so that customer can remove production she/he doesn't want now
+        responses:
+          204:
